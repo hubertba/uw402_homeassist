@@ -51,8 +51,13 @@ cd "$(dirname "$0")/.."
 RSYNC_ARGS=(
   -az
   --delete
+  --omit-dir-times
+  --no-owner
+  --no-group
+  --rsync-path='sudo rsync'
   --exclude='.git/'
   --exclude='.gitignore'
+  --exclude='README.md'
   --exclude='scripts/'
   --exclude='.HA_VERSION'
   --exclude='.ha_run.lock'
@@ -90,12 +95,20 @@ fi
 
 if [[ "$CHECK_CONFIG" == "1" ]]; then
   echo "Checking Home Assistant configuration..."
-  ssh "$REMOTE" "ha core check"
+  if [[ -n "${HASS_SERVER:-}" && -n "${HASS_TOKEN:-}" ]] && command -v hass-cli >/dev/null 2>&1; then
+    hass-cli service call homeassistant.check_config
+  else
+    ssh "$REMOTE" "ha core check"
+  fi
 fi
 
 if [[ "$RESTART_HA" == "1" ]]; then
   echo "Restarting Home Assistant..."
-  ssh "$REMOTE" "ha core restart"
+  if [[ -n "${HASS_SERVER:-}" && -n "${HASS_TOKEN:-}" ]] && command -v hass-cli >/dev/null 2>&1; then
+    hass-cli service call homeassistant.restart
+  else
+    ssh "$REMOTE" "ha core restart"
+  fi
 fi
 
 echo "Deploy complete."

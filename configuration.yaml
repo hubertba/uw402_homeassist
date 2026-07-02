@@ -85,8 +85,10 @@ template:
         state_class: measurement
         state: >
           {% set pv = states('sensor.symo_8_2_3_m_1_ac_power') | float(0) %}
-          {% set marstek_grid = states('sensor.marstek_venuse_3_0_grid_power') | float(0) %}
-          {{ [0, (pv + marstek_grid)] | max | round(0) }}
+          {% set grid = states('sensor.ecotracker_aktueller_verbrauch') | float(0) %}
+          {% set battery_out = states('sensor.marstek_venuse_3_0_power_out') | float(0) %}
+          {% set battery_in = states('sensor.marstek_venuse_3_0_power_in') | float(0) %}
+          {{ [0, (pv + grid + battery_out - battery_in)] | max | round(0) }}
 
       - name: "PumpMeUp Charging Power"
         unique_id: pumpmeup_charging_power
@@ -105,4 +107,3 @@ template:
           {% else %}
             0
           {% endif %}
-
