@@ -1,0 +1,65 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Codex",
+        "description": "Codex automatically detects the installed Codex CLI Worker app and its generated worker API token."
+      },
+      "reauth_confirm": {
+        "title": "Codex",
+        "description": "Reconnect to the installed Codex CLI Worker app."
+      },
+      "reconfigure": {
+        "title": "Codex",
+        "description": "Reconnect to the installed Codex CLI Worker app."
+      }
+    },
+    "error": {
+      "cannot_connect": "Could not discover or connect to the Codex CLI Worker app. Make sure it is installed, started, and has generated its worker API token.",
+      "invalid_auth": "The worker rejected its generated API token. Restart the Codex CLI Worker app and try again."
+    },
+    "abort": {
+      "already_configured": "Codex is already configured.",
+      "cannot_connect": "Could not discover or connect to the Codex CLI Worker app.",
+      "reauth_successful": "Codex was reconnected.",
+      "reconfigure_successful": "Codex was reconfigured.",
+      "unknown": "The Codex config entry could not be found."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "last_task": {
+        "name": "Last task"
+      },
+      "active_tasks": {
+        "name": "Active tasks"
+      },
+      "auth_status": {
+        "name": "Auth status"
+      },
+      "five_hour_limit": {
+        "name": "5-hour limit"
+      },
+      "five_hour_reset": {
+        "name": "5-hour reset"
+      },
+      "weekly_limit": {
+        "name": "Weekly limit"
+      },
+      "weekly_reset": {
+        "name": "Weekly reset"
+      }
+    },
+    "binary_sensor": {
+      "task_running": {
+        "name": "Task running"
+      }
+    }
+  },
+  "issues": {
+    "codex_not_signed_in": {
+      "title": "Codex is not signed in",
+      "description": "The Codex worker is reachable, but Codex CLI is not signed in. Start the Codex sign-in flow from the add-on web UI or by running the `codex_cli.start_login` action."
+    }
+  }
+}

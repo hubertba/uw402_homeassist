@@ -1,0 +1,142 @@
+light:
+  - name: "Esstisch"
+    address: "1/0/0"
+    state_address: "1/0/0"
+
+  - name: "Küche"
+    address: "1/0/1"
+    state_address: "1/0/1"
+
+  - name: "Wohnzimmer"
+    address: "1/0/2"
+    state_address: "1/0/2"
+
+  - name: "Speis"
+    address: "1/0/3"
+    state_address: "1/0/3"
+
+  - name: "Abstellraum"
+    address: "1/0/4"
+    state_address: "1/0/4"
+
+  - name: "Klo"
+    address: "1/0/5"
+    state_address: "1/0/5"
+
+  - name: "Terrasse"
+    address: "2/0/6"
+    state_address: "2/0/6"
+
+  - name: "Foyer"
+    address: "2/0/0"
+    state_address: "2/0/0"
+
+  - name: "Schrankraum"
+    address: "2/0/1"
+    state_address: "2/0/1"
+
+  - name: "Kinderzimmer 1"
+    address: "2/0/2"
+    state_address: "2/0/2"
+
+  - name: "Kinderzimmer 2"
+    address: "2/0/3"
+    state_address: "2/0/3"
+
+  - name: "Schlafzimmer"
+    address: "2/0/4"
+    state_address: "2/0/4"
+
+  - name: "Bad"
+    address: "2/0/5"
+    state_address: "2/0/5"
+
+  - name: "Partyraum"
+    address: "4/0/3"
+    state_address: "4/0/3"
+
+  - name: "Büro"
+    address: "3/0/0"
+    state_address: "3/0/0"
+
+  - name: "Serverraum"
+    address: "3/0/1"
+    state_address: "3/0/1"
+
+  - name: "Gang Büro"
+    address: "3/0/2"
+    state_address: "3/0/2"
+
+  - name: "Garderobe"
+    address: "3/0/3"
+    state_address: "3/0/3"
+
+  - name: "Lebensmittelraum"
+    address: "3/0/4"
+    state_address: "3/0/4"
+
+  - name: "Sattelraum"
+    address: "3/0/5"
+    state_address: "3/0/5"
+
+  - name: "Kutschenraum"
+    address: "3/0/6"
+    state_address: "3/0/6"
+
+  - name: "Außenbeleuchtung"
+    address: "3/0/7"
+    state_address: "3/0/7"
+
+  - name: "Arbeitsraum"
+    address: "4/0/0"
+    state_address: "4/0/0"
+
+  - name: "Gang"
+    address: "4/0/2"
+    state_address: "4/0/2"
+
+  - name: "Technikraum"
+    address: "4/0/4"
+    state_address: "4/0/4"
+
+  - name: "Lagerraum"
+    address: "4/0/5"
+    state_address: "4/0/5"
+
+switch:
+  - name: "Alles AUS"
+    address: "0/0/1"
+    state_address: "0/0/1"
+
+sensor:
+  - name: "Temperatur Kinderzimmer 1"
+    state_address: "2/3/0"
+    type: temperature
+
+  - name: "Temperatur Kinderzimmer 2"
+    state_address: "2/3/1"
+    type: temperature
+
+  - name: "Temperatur Schlafzimmer"
+    state_address: "2/3/2"
+    type: temperature
+
+  - name: "Temperatur Bad"
+    state_address: "2/3/3"
+    type: temperature
+
+  - name: "Temperatur Büro"
+    state_address: "4/2/0"
+    type: temperature
+
+  - name: "Temperatur Partyraum"
+    state_address: "4/2/1"
+    type: temperature
+
+  - name: "Temperatur WC Bad"
+    state_address: "4/2/2"
+    type: temperature
+
+  - name: "Temperatur Foyer"
+    state_address: "4/2/3"
+    type: temperature

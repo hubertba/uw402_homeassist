@@ -1,0 +1,49 @@
+# Venus E3 power sensors for power-flow-card-plus
+#
+# ES.GetStatus.bat_power is often 0 on Venus E 3.0 → use voltage × current instead.
+# Reload: Developer Tools → YAML → Reload template entities
+#
+# Check entity IDs in Developer Tools → States (adjust below if yours differ)
+
+#template:
+#  - sensor:
+#      - name: Venus battery power flow
+#        unique_id: venus_e3_battery_power_flow
+#        unit_of_measurement: W
+#        device_class: power
+#        state_class: measurement
+#        state: >
+#          {% set bp = states('sensor.marstek_venuse_3_0_power') | float(0) %}
+#          {% if bp != 0 %}
+#            {{ bp }}
+#          {% else %}
+#            {% set v = states('sensor.marstek_venuse_3_0_voltage') | float(0) %}
+#            {% set i = states('sensor.marstek_venuse_3_0_current') | float(0) %}
+#            {% set watts = (v * i) | abs | round(0) %}
+#            {% set st = states('sensor.marstek_venuse_3_0_state') | lower %}
+#            {% if i > 0 or st == 'charging' %}
+#              {{ watts }}
+#            {% elif i < 0 or st == 'discharging' %}
+#              {{ -watts }}
+#            {% else %}
+#              0
+#            {% endif %}
+#          {% endif %}#
+
+#      - name: Venus power in flow
+#        unique_id: venus_e3_power_in_flow
+#       unit_of_measurement: W
+#        device_class: power
+#        state_class: measurement
+#        state: >
+#          {% set p = states('sensor.venus_battery_power_flow') | float(0) %}
+#          {{ p if p > 0 else 0 }}
+
+#      - name: Venus power out flow
+#        unique_id: venus_e3_power_out_flow
+#        unit_of_measurement: W
+#        device_class: power
+#        state_class: measurement
+#        state: >
+#          {% set p = states('sensor.venus_battery_power_flow') | float(0) %}
+#          {{ (p * -1) | round(0) if p < 0 else 0 }}

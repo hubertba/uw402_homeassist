@@ -1,0 +1,108 @@
+
+# Loads default set of integrations. Do not remove.
+default_config:
+
+# Load frontend themes from the themes folder
+frontend:
+  themes: !include_dir_merge_named themes
+
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml
+#knx: !include knx.yaml
+
+#homeassistant:
+#  packages: !include_dir_named homeassistant/
+
+rest:
+  - resource: http://10.0.1.150/v1/json
+    scan_interval: 5
+    sensor:
+      - name: "ecotracker"
+        value_template: "{{ value_json.power | default(0) }}"
+        json_attributes:
+          - power
+          - energyCounterIn
+          - energyCounterOut
+
+template:
+  - sensor:
+      - name: "Quooker Total Energy Combined"
+        unique_id: quooker_total_energy_combined
+        device_class: energy
+        state_class: total_increasing
+        unit_of_measurement: "kWh"
+        state: >
+          {{
+            states('sensor.quooker_total_energy') | float(0)
+            +
+            states('sensor.quooker_2_total_energy') | float(0)
+          }}
+      - name: "Quooker Combined Power"
+        unique_id: quooker_combined_power
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {{
+            states('sensor.quooker_power') | float(0)
+            + states('sensor.quooker_2_power') | float(0)
+          }}
+      - name: "Ecotracker aktueller Verbrauch"
+        unique_id: ecotracker_aktueller_verbrauch
+        device_class: power
+        state_class: measurement
+        unit_of_measurement: "W"
+        state: "{{ state_attr('sensor.ecotracker', 'power') | float(0) }}"
+
+      - name: "Ecotracker Bezug"
+        unique_id: ecotracker_bezug
+        device_class: energy
+        state_class: total_increasing
+        unit_of_measurement: "kWh"
+        state: "{{ (state_attr('sensor.ecotracker', 'energyCounterIn') | float(0) / 1000) | round(3) }}"
+
+      - name: "Ecotracker Einspeisung"
+        unique_id: ecotracker_einspeisung
+        device_class: energy
+        state_class: total_increasing
+        unit_of_measurement: "kWh"
+        state: "{{ (state_attr('sensor.ecotracker', 'energyCounterOut') | float(0) / 1000) | round(3) }}"
+
+      - name: "Ecotracker Grid Power"
+        unique_id: ecotracker_grid_power
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {{ states('sensor.ecotracker_aktueller_verbrauch') | float(0)
+             - states('sensor.symo_8_2_3_m_1_ac_power') | float(0) }}
+
+      - name: "Hausverbrauch aktuell"
+        unique_id: hausverbrauch_aktuell
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {% set pv = states('sensor.symo_8_2_3_m_1_ac_power') | float(0) %}
+          {% set marstek_grid = states('sensor.marstek_venuse_3_0_grid_power') | float(0) %}
+          {{ [0, (pv + marstek_grid)] | max | round(0) }}
+
+      - name: "PumpMeUp Charging Power"
+        unique_id: pumpmeup_charging_power
+        unit_of_measurement: "W"
+        device_class: power
+        state_class: measurement
+        state: >
+          {% if is_state('binary_sensor.pumpmeup_charge_permitted', 'on') %}
+            {{
+              states('sensor.pumpmeup_charging_current')|float(0)
+              *
+              states('sensor.pumpmeup_charging_voltage')|float(0)
+              *
+              states('number.pumpmeup_phase_count')|float(3)
+            }}
+          {% else %}
+            0
+          {% endif %}
+

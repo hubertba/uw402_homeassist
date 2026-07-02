@@ -1,0 +1,35 @@
+# Home Assistant runtime data
+.HA_VERSION
+.ha_run.lock
+.cache/
+.cloud/
+.storage/
+deps/
+tts/
+codex_tasks/
+
+# Recorder database and logs
+*.db
+*.db-shm
+*.db-wal
+*.log
+*.log.*
+
+# Local secrets and generated backups
+secrets.yaml
+*.bak
+*.backup
+*.tmp
+configuration.yaml.bak-*
+
+# Generated Python/cache files
+__pycache__/
+*.py[cod]
+
+# HACS can reinstall itself and its frontend bundle is noisy in Git
+custom_components/hacs/
+www/community/
+www/codex_cli_auth/
+
+# OS/editor noise
+.DS_Store

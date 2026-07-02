@@ -1,0 +1,47 @@
+start_task:
+  fields:
+    prompt:
+      required: true
+      selector:
+        text:
+          multiline: true
+
+start_login:
+  fields:
+    force:
+      required: false
+      default: false
+      selector:
+        boolean:
+
+get_login_status:
+
+logout:
+
+get_task:
+  fields:
+    task_id:
+      required: true
+      selector:
+        text:
+
+list_tasks:
+
+cancel_task:
+  fields:
+    task_id:
+      required: true
+      selector:
+        text:
+
+reply_task:
+  fields:
+    task_id:
+      required: true
+      selector:
+        text:
+    reply:
+      required: true
+      selector:
+        text:
+          multiline: true

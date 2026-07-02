@@ -1,0 +1,33 @@
+# Marstek Venus E 3.0 — battery energy sensors for Home Assistant Energy dashboard
+#
+# Add to configuration.yaml:
+#   homeassistant:
+#     packages: !include_dir_named homeassistant/
+#
+# Or paste the sensor block below directly into configuration.yaml.
+#
+# Prerequisites (verify in Developer Tools → States, search "power"):
+#   sensor.marstek_venuse_3_0_battery_power_in   (W, from Marstek Local API)
+#   sensor.marstek_venuse_3_0_battery_power_out  (W, from Marstek Local API)
+#
+# After restart, use in Settings → Energy → Configure battery system:
+#   Energy charged into the battery:  sensor.venus_battery_energy_in
+#   Energy discharged from the battery: sensor.venus_battery_energy_out
+#   Display name: Venus
+
+#sensor:
+#  - platform: integration
+#    source: sensor.marstek_venuse_3_0_power_in
+#    name: Venus battery energy in
+#    unique_id: venus_e3_battery_energy_in
+#    unit_prefix: k
+#    round: 2
+#    method: left
+
+#  - platform: integration
+#    source: sensor.marstek_venuse_3_0_power_out
+#    name: Venus battery energy out
+#    unique_id: venus_e3_battery_energy_out
+#    unit_prefix: k
+#    round: 2
+#    method: left
