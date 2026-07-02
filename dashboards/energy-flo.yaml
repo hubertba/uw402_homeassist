@@ -1,0 +1,71 @@
+views:
+- type: sections
+  sections:
+  - type: grid
+    cards:
+    - type: heading
+      heading: New section
+    - type: tile
+      entity: sensor.solarnet_power_photovoltaics
+    - type: tile
+      entity: sensor.ecotracker_aktueller_verbrauch
+    - type: tile
+      grid_options:
+        columns: full
+        rows: 1
+      entity: sensor.hausverbrauch_aktuell
+      vertical: true
+      features_position: bottom
+    - type: tile
+      entity: sensor.marstek_venuse_3_0_grid_power
+      features:
+      - type: trend-graph
+      grid_options:
+        columns: full
+        rows: auto
+    - type: gauge
+      entity: sensor.marstek_venuse_3_0_state_of_charge
+    - type: tile
+      entity: sensor.solarnet_power_photovoltaics
+      features:
+      - type: trend-graph
+      grid_options:
+        columns: full
+        rows: auto
+    - type: tile
+      grid_options:
+        rows: auto
+        columns: full
+      entity: sensor.hausverbrauch_aktuell
+      vertical: true
+      features:
+      - type: trend-graph
+      features_position: bottom
+  - type: grid
+    cards:
+    - type: heading
+      heading: Neuer Abschnitt
+    - type: statistics-graph
+      entities:
+      - sensor.solarnet_power_photovoltaics
+      days_to_show: 2
+      period: 5minute
+      chart_type: line-stack
+      stat_types:
+      - mean
+    - type: statistics-graph
+      entities:
+      - sensor.marstek_venuse_3_0_grid_power
+      days_to_show: 2
+      period: 5minute
+      chart_type: line-stack
+      stat_types:
+      - mean
+    - type: statistics-graph
+      entities:
+      - sensor.marstek_venuse_3_0_remaining_capacity
+      days_to_show: 2
+      period: 5minute
+      chart_type: line-stack
+      stat_types:
+      - mean

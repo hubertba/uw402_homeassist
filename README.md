@@ -9,6 +9,7 @@ erfolgen per SSH auf den Host-Alias `ha`.
 | Pfad | Zweck |
 | --- | --- |
 | `configuration.yaml` | Hauptkonfiguration mit REST- und Template-Sensoren |
+| `dashboards/` | versionierte Lovelace-Dashboards |
 | `automations.yaml` | Home-Assistant-Automationen |
 | `scripts.yaml` | Home-Assistant-Scripts |
 | `scenes.yaml` | Home-Assistant-Szenen |
@@ -40,16 +41,47 @@ Darauf bauen mehrere Template-Sensoren auf:
 | `sensor.ecotracker_bezug` | Netzbezug aus `energyCounterIn` in kWh |
 | `sensor.ecotracker_einspeisung` | Einspeisung aus `energyCounterOut` in kWh |
 | `sensor.ecotracker_grid_power` | Ecotracker-Verbrauch minus Fronius/PV-Leistung |
-| `sensor.hausverbrauch_aktuell` | aktueller Hausverbrauch aus PV-Leistung plus Marstek Grid Power |
+| `sensor.hausverbrauch_aktuell` | aktueller Hausverbrauch aus PV, signed Netzleistung und Batteriefluss |
 | `sensor.pumpmeup_charging_power` | berechnete Ladeleistung aus Strom, Spannung und Phasen |
 
 Der Hausverbrauch wird aktuell so berechnet:
 
 ```jinja
 {% set pv = states('sensor.symo_8_2_3_m_1_ac_power') | float(0) %}
-{% set marstek_grid = states('sensor.marstek_venuse_3_0_grid_power') | float(0) %}
-{{ [0, (pv + marstek_grid)] | max | round(0) }}
+{% set grid = states('sensor.ecotracker_aktueller_verbrauch') | float(0) %}
+{% set battery_out = states('sensor.marstek_venuse_3_0_power_out') | float(0) %}
+{% set battery_in = states('sensor.marstek_venuse_3_0_power_in') | float(0) %}
+{{ [0, (pv + grid + battery_out - battery_in)] | max | round(0) }}
 ```
+
+## Dashboards
+
+Die Dashboards sind als YAML-Dashboards versioniert:
+
+```yaml
+lovelace:
+  dashboards:
+    energy-flow:
+      mode: yaml
+      title: Energie
+      icon: mdi:home-lightning-bolt
+      show_in_sidebar: true
+      filename: dashboards/energy.yaml
+    energy-flo:
+      mode: yaml
+      title: EnergieFluss
+      icon: mdi:chart-areaspline
+      show_in_sidebar: true
+      filename: dashboards/energy-flo.yaml
+```
+
+`dashboards/energy.yaml` enthaelt zwei Views:
+
+- `Energie`: Hausverbrauch, PV, Netzleistung, Batterie, Quooker und PumpMeUp
+- `Diagnose`: Marstek/Venus-Status, CT-Werte, WLAN und Betriebsmodus
+
+`dashboards/energy-flo.yaml` ist aus dem vorhandenen UI-Dashboard
+`lovelace.energy_flo` aus `.storage` exportiert und als YAML umgewandelt.
 
 ## Marstek / Venus
 

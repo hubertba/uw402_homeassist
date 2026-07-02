@@ -1,0 +1,153 @@
+title: Energie
+views:
+  - title: Energie
+    path: energy
+    icon: mdi:home-lightning-bolt
+    badges: []
+    cards:
+      - type: grid
+        title: Aktueller Energiefluss
+        columns: 3
+        square: false
+        cards:
+          - type: entity
+            entity: sensor.hausverbrauch_aktuell
+            name: Hausverbrauch
+            icon: mdi:home-lightning-bolt
+          - type: entity
+            entity: sensor.symo_8_2_3_m_1_ac_power
+            name: PV Leistung
+            icon: mdi:solar-power-variant
+          - type: entity
+            entity: sensor.ecotracker_aktueller_verbrauch
+            name: Netzleistung
+            icon: mdi:transmission-tower
+
+
+      - type: gauge
+        entity: sensor.hausverbrauch_aktuell
+        name: Hausverbrauch aktuell
+        min: 0
+        max: 12000
+        needle: true
+        severity:
+          green: 0
+          yellow: 3000
+          red: 7000
+
+      - type: gauge
+        entity: sensor.ecotracker_aktueller_verbrauch
+        name: Grid
+        min: -10000
+        max: 10000
+        needle: true
+        severity:
+          green: -10000
+          yellow: -100
+          red: +100
+
+
+
+
+      - type: history-graph
+        title: Leistung der letzten 6 Stunden
+        hours_to_show: 6
+        entities:
+          - entity: sensor.hausverbrauch_aktuell
+            name: Haus
+          - entity: sensor.symo_8_2_3_m_1_ac_power
+            name: PV
+          - entity: sensor.ecotracker_aktueller_verbrauch
+            name: Netz
+          - entity: sensor.marstek_venuse_3_0_ct_total_power
+            name: Marstek CT
+
+      - type: entities
+        title: Netz und Zaehler
+        show_header_toggle: false
+        entities:
+          - entity: sensor.ecotracker_aktueller_verbrauch
+            name: Aktuelle Netzleistung
+          - entity: sensor.ecotracker_bezug
+            name: Bezug gesamt
+          - entity: sensor.ecotracker_einspeisung
+            name: Einspeisung gesamt
+          - entity: sensor.ecotracker_grid_power
+            name: Ecotracker Grid Power
+          - entity: sensor.ecotracker
+            name: Rohwert Ecotracker
+
+      - type: entities
+        title: Marstek Venus E 3.0
+        show_header_toggle: false
+        entities:
+          - entity: sensor.marstek_venuse_3_0_state
+            name: Status
+          - entity: sensor.marstek_venuse_3_0_state_of_charge
+            name: Ladezustand
+          - entity: sensor.marstek_venuse_3_0_remaining_capacity
+            name: Restkapazitaet
+          - entity: sensor.marstek_venuse_3_0_power_in
+            name: Power in
+          - entity: sensor.marstek_venuse_3_0_power_out
+            name: Power out
+          - entity: sensor.marstek_venuse_3_0_grid_power
+            name: Grid Power
+          - entity: sensor.marstek_venuse_3_0_ct_total_power
+            name: CT Total Power
+          - entity: binary_sensor.marstek_venuse_3_0_ct_connected
+            name: CT verbunden
+          - entity: sensor.marstek_venuse_3_0_last_message_received
+            name: Letzte Nachricht
+
+      - type: entities
+        title: Verbraucher
+        show_header_toggle: false
+        entities:
+          - entity: sensor.quooker_combined_power
+            name: Quooker Leistung
+          - entity: sensor.quooker_total_energy_combined
+            name: Quooker Energie
+          - entity: sensor.pumpmeup_charging_power
+            name: PumpMeUp Ladeleistung
+          - entity: binary_sensor.pumpmeup_charge_permitted
+            name: PumpMeUp Laden erlaubt
+          - entity: sensor.pumpmeup_charging_current
+            name: PumpMeUp Strom
+          - entity: sensor.pumpmeup_charging_voltage
+            name: PumpMeUp Spannung
+
+  - title: Diagnose
+    path: diagnostics
+    icon: mdi:tools
+    badges: []
+    cards:
+      - type: entities
+        title: Marstek Diagnose
+        show_header_toggle: false
+        entities:
+          - entity: sensor.marstek_venuse_3_0_operating_mode
+            name: Betriebsmodus
+          - entity: select.marstek_venuse_3_0_operating_mode
+            name: Betriebsmodus Auswahl
+          - entity: sensor.marstek_venuse_3_0_wifi_signal_strength
+            name: WLAN Signal
+          - entity: sensor.marstek_venuse_3_0_wifi_ip_address
+            name: WLAN IP
+          - entity: sensor.marstek_venuse_3_0_firmware_version
+            name: Firmware
+          - entity: sensor.marstek_venuse_3_0_error_code
+            name: Fehlercode
+          - entity: binary_sensor.marstek_venuse_3_0_charging_enabled
+            name: Laden aktiviert
+          - entity: binary_sensor.marstek_venuse_3_0_discharging_enabled
+            name: Entladen aktiviert
+
+      - type: history-graph
+        title: Marstek CT Phasen
+        hours_to_show: 6
+        entities:
+          - sensor.marstek_venuse_3_0_ct_phase_a_power
+          - sensor.marstek_venuse_3_0_ct_phase_b_power
+          - sensor.marstek_venuse_3_0_ct_phase_c_power
+          - sensor.marstek_venuse_3_0_ct_total_power
