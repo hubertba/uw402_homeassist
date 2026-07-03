@@ -1,1 +1,18 @@
-[]
+- id: reolink_driveway_motion_snapshot
+  alias: Reolink Driveway Snapshot bei Bewegung
+  description: Speichert ein Bild, wenn die Reolink Driveway Kamera Bewegung erkennt.
+  mode: single
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.driveway_motion
+      from: "off"
+      to: "on"
+  action:
+    - service: camera.snapshot
+      target:
+        entity_id: camera.driveway_snapshots_clear
+      data:
+        filename: "/config/www/snapshots/driveway_motion_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
+    - delay:
+        seconds: 2
+    - service: shell_command.generate_snapshot_gallery

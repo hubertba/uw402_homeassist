@@ -1,0 +1,77 @@
+title: Kameras
+views:
+  - title: Kameras
+    path: cameras
+    icon: mdi:cctv
+    badges: []
+    cards:
+      - type: grid
+        title: Live-Feeds
+        columns: 1
+        square: false
+        cards:
+          - type: picture-entity
+            entity: camera.carport_eingangstur_live
+            name: Eingangstuer live
+            camera_view: live
+            show_state: true
+            show_name: true
+
+      - type: grid
+        title: Snapshots
+        columns: 2
+        square: false
+        cards:
+          - type: picture-entity
+            entity: camera.carport_eingangstur_last_ring
+            name: Eingangstuer letzter Ring
+            camera_view: auto
+            show_state: true
+            show_name: true
+          - type: picture-entity
+            entity: camera.carport_eingangstur_last_motion
+            name: Eingangstuer letzte Bewegung
+            camera_view: auto
+            show_state: true
+            show_name: true
+          - type: picture-entity
+            entity: camera.driveway_snapshots_fluent
+            name: Driveway Snapshot fluent
+            camera_view: auto
+            show_state: true
+            show_name: true
+          - type: picture-entity
+            entity: camera.driveway_snapshots_clear
+            name: Driveway Snapshot clear
+            camera_view: auto
+            show_state: true
+            show_name: true
+
+      - type: entities
+        title: Driveway Status
+        show_header_toggle: false
+        entities:
+          - entity: binary_sensor.driveway_motion
+            name: Bewegung
+          - entity: binary_sensor.driveway_person
+            name: Person
+          - entity: binary_sensor.driveway_vehicle
+            name: Fahrzeug
+          - entity: binary_sensor.driveway_pet
+            name: Tier
+          - entity: sensor.driveway_battery
+            name: Batterie
+          - entity: switch.driveway_privacy_mode
+            name: Privatsphaere
+          - entity: light.driveway_floodlight
+            name: Flutlicht
+
+  - title: Bewegungsbilder
+    path: snapshots
+    icon: mdi:image-multiple
+    badges: []
+    cards:
+      - type: iframe
+        title: Reolink Bewegungsbilder
+        url: /local/snapshots/index.html
+        aspect_ratio: 100%

@@ -20,11 +20,19 @@ lovelace:
       icon: mdi:chart-areaspline
       show_in_sidebar: true
       filename: dashboards/energy-flo.yaml
+    camera-feeds:
+      mode: yaml
+      title: Kameras
+      icon: mdi:cctv
+      show_in_sidebar: true
+      filename: dashboards/cameras.yaml
 
 automation: !include automations.yaml
 script: !include scripts.yaml
 scene: !include scenes.yaml
-#knx: !include knx.yaml
+shell_command:
+  generate_snapshot_gallery: /config/shell_commands/generate_snapshot_gallery.sh
+knx: !include knx.yaml
 
 #homeassistant:
 #  packages: !include_dir_named homeassistant/
