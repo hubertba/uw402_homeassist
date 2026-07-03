@@ -1,18 +1,44 @@
 - id: reolink_driveway_motion_snapshot
-  alias: Reolink Driveway Snapshot bei Bewegung
-  description: Speichert ein Bild, wenn die Reolink Driveway Kamera Bewegung erkennt.
+  alias: Reolink Driveway Snapshot bei Erkennung
+  description: Speichert ein Bild und sendet eine Nachricht, wenn die Reolink Driveway Kamera Personen oder Fahrzeuge erkennt.
   mode: single
   trigger:
     - platform: state
-      entity_id: binary_sensor.driveway_motion
+      entity_id: binary_sensor.driveway_person
       from: "off"
       to: "on"
+      id: person
+    - platform: state
+      entity_id: binary_sensor.driveway_vehicle
+      from: "off"
+      to: "on"
+      id: vehicle
+  condition:
+    - condition: numeric_state
+      entity_id: sensor.driveway_battery
+      above: 20
+    - condition: state
+      entity_id: switch.driveway_privacy_mode
+      state: "off"
+  variables:
+    event_label: "{{ 'Person' if trigger.id == 'person' else 'Fahrzeug' }}"
+    snapshot_file: "driveway_{{ trigger.id }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
+    snapshot_path: "/config/www/snapshots/{{ snapshot_file }}"
+    snapshot_url: "/local/snapshots/{{ snapshot_file }}"
   action:
     - service: camera.snapshot
       target:
         entity_id: camera.driveway_snapshots_clear
       data:
-        filename: "/config/www/snapshots/driveway_motion_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
+        filename: "{{ snapshot_path }}"
     - delay:
         seconds: 2
     - service: shell_command.generate_snapshot_gallery
+    - service: notify.mobile_app_max16
+      data:
+        title: "Driveway {{ event_label }} erkannt"
+        message: "Reolink hat {{ event_label | lower }} erkannt."
+        data:
+          image: "{{ snapshot_url }}"
+          url: "/camera-feeds/snapshots"
+          clickAction: "/camera-feeds/snapshots"

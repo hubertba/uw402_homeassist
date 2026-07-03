@@ -26,6 +26,12 @@ lovelace:
       icon: mdi:cctv
       show_in_sidebar: true
       filename: dashboards/cameras.yaml
+    internet-bandwidth:
+      mode: yaml
+      title: Internet
+      icon: mdi:speedometer
+      show_in_sidebar: true
+      filename: dashboards/internet.yaml
 
 automation: !include automations.yaml
 script: !include scripts.yaml
@@ -130,3 +136,35 @@ template:
           {% else %}
             0
           {% endif %}
+      - name: "Internet Durchsatz gesamt"
+        unique_id: internet_durchsatz_gesamt
+        unit_of_measurement: "kB/s"
+        device_class: data_rate
+        state_class: measurement
+        state: >
+          {{
+            states('sensor.uwc_download_throughput') | float(0)
+            +
+            states('sensor.uwc_upload_throughput') | float(0)
+          }}
+      - name: "Internet Download Mbps"
+        unique_id: internet_download_mbps
+        unit_of_measurement: "Mbit/s"
+        device_class: data_rate
+        state_class: measurement
+        state: >
+          {{ (states('sensor.uwc_download_throughput') | float(0) * 8 / 1000) | round(2) }}
+      - name: "Internet Upload Mbps"
+        unique_id: internet_upload_mbps
+        unit_of_measurement: "Mbit/s"
+        device_class: data_rate
+        state_class: measurement
+        state: >
+          {{ (states('sensor.uwc_upload_throughput') | float(0) * 8 / 1000) | round(2) }}
+      - name: "Internet Durchsatz gesamt Mbps"
+        unique_id: internet_durchsatz_gesamt_mbps
+        unit_of_measurement: "Mbit/s"
+        device_class: data_rate
+        state_class: measurement
+        state: >
+          {{ (states('sensor.internet_durchsatz_gesamt') | float(0) * 8 / 1000) | round(2) }}

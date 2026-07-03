@@ -1,0 +1,91 @@
+title: Internet
+views:
+  - title: Bandbreite
+    path: bandwidth
+    icon: mdi:speedometer
+    badges: []
+    cards:
+      - type: grid
+        title: Aktuell
+        columns: 3
+        square: false
+        cards:
+          - type: gauge
+            entity: sensor.internet_download_mbps
+            name: Download
+            min: 0
+            max: 100
+            needle: true
+            severity:
+              green: 0
+              yellow: 50
+              red: 80
+          - type: gauge
+            entity: sensor.internet_upload_mbps
+            name: Upload
+            min: 0
+            max: 50
+            needle: true
+            severity:
+              green: 0
+              yellow: 20
+              red: 40
+          - type: gauge
+            entity: sensor.internet_durchsatz_gesamt_mbps
+            name: Gesamt
+            min: 0
+            max: 120
+            needle: true
+            severity:
+              green: 0
+              yellow: 60
+              red: 90
+
+      - type: entities
+        title: Aktuelle Werte
+        show_header_toggle: false
+        entities:
+          - entity: sensor.internet_download_mbps
+            name: Download
+          - entity: sensor.internet_upload_mbps
+            name: Upload
+          - entity: sensor.internet_durchsatz_gesamt_mbps
+            name: Gesamt
+          - entity: sensor.uwc_download_throughput
+            name: Download Rohwert
+          - entity: sensor.uwc_upload_throughput
+            name: Upload Rohwert
+
+      - type: history-graph
+        title: Verlauf letzte 60 Minuten
+        hours_to_show: 1
+        entities:
+          - entity: sensor.internet_download_mbps
+            name: Download
+          - entity: sensor.internet_upload_mbps
+            name: Upload
+          - entity: sensor.internet_durchsatz_gesamt_mbps
+            name: Gesamt
+
+      - type: history-graph
+        title: Verlauf letzte 24 Stunden
+        hours_to_show: 24
+        entities:
+          - entity: sensor.internet_download_mbps
+            name: Download
+          - entity: sensor.internet_upload_mbps
+            name: Upload
+
+      - type: statistics-graph
+        title: 7 Tage Bandbreite
+        days_to_show: 7
+        period: hour
+        chart_type: line
+        stat_types:
+          - mean
+          - max
+        entities:
+          - entity: sensor.internet_download_mbps
+            name: Download
+          - entity: sensor.internet_upload_mbps
+            name: Upload

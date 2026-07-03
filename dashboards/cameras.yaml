@@ -18,7 +18,7 @@ views:
             show_name: true
 
       - type: grid
-        title: Snapshots
+        title: Eingangstuer Snapshots
         columns: 2
         square: false
         cards:
@@ -34,6 +34,12 @@ views:
             camera_view: auto
             show_state: true
             show_name: true
+
+      - type: grid
+        title: Reolink Snapshots
+        columns: 1
+        square: false
+        cards:
           - type: picture-entity
             entity: camera.driveway_snapshots_fluent
             name: Driveway Snapshot fluent
@@ -51,6 +57,8 @@ views:
         title: Driveway Status
         show_header_toggle: false
         entities:
+          - entity: automation.reolink_driveway_snapshot_bei_bewegung
+            name: Snapshot-Automation
           - entity: binary_sensor.driveway_motion
             name: Bewegung
           - entity: binary_sensor.driveway_person
@@ -65,6 +73,17 @@ views:
             name: Privatsphaere
           - entity: light.driveway_floodlight
             name: Flutlicht
+
+      - type: history-graph
+        title: Driveway Erkennung
+        hours_to_show: 24
+        entities:
+          - entity: binary_sensor.driveway_person
+            name: Person
+          - entity: binary_sensor.driveway_vehicle
+            name: Fahrzeug
+          - entity: binary_sensor.driveway_motion
+            name: Bewegung
 
   - title: Bewegungsbilder
     path: snapshots

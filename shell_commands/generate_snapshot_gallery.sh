@@ -4,31 +4,61 @@ set -eu
 python3 <<'PY'
 from html import escape
 from pathlib import Path
+from time import time
 
 snapshot_dir = Path("/config/www/snapshots")
 index_file = snapshot_dir / "index.html"
 tmp_file = snapshot_dir / "index.html.tmp"
+max_files = 200
+max_age_seconds = 14 * 24 * 60 * 60
 
 snapshot_dir.mkdir(parents=True, exist_ok=True)
 files = sorted(
-    snapshot_dir.glob("driveway_motion_*.jpg"),
+    snapshot_dir.glob("driveway_*.jpg"),
+    key=lambda path: path.stat().st_mtime,
+    reverse=True,
+)
+
+cutoff = time() - max_age_seconds
+for index, path in enumerate(files):
+    if index >= max_files or path.stat().st_mtime < cutoff:
+        path.unlink(missing_ok=True)
+
+files = sorted(
+    snapshot_dir.glob("driveway_*.jpg"),
     key=lambda path: path.stat().st_mtime,
     reverse=True,
 )
 
 items = []
+groups = {}
 for path in files:
     name = path.name
-    label = name.removeprefix("driveway_motion_").removesuffix(".jpg")
-    items.append(
-        f'''    <a href="/local/snapshots/{escape(name)}" target="_blank" rel="noopener">
+    parts = name.removesuffix(".jpg").split("_")
+    event = parts[1].capitalize() if len(parts) >= 2 else "Erkennung"
+    stamp = "_".join(parts[2:]) if len(parts) >= 4 else path.stem
+    date = stamp[:8] if len(stamp) >= 8 else "Unbekannt"
+    label = f"{event} - {stamp}"
+    groups.setdefault(date, []).append(
+        f'''      <a href="/local/snapshots/{escape(name)}" target="_blank" rel="noopener">
       <img src="/local/snapshots/{escape(name)}" loading="lazy" alt="{escape(label)}">
       <div class="label">{escape(label)}</div>
     </a>'''
     )
 
-if items:
-    body = "  <main class=\"grid\">\\n" + "\\n".join(items) + "\\n  </main>"
+if groups:
+    sections = []
+    for date, date_items in groups.items():
+        title = f"{date[6:8]}.{date[4:6]}.{date[:4]}" if len(date) == 8 else date
+        sections.append(
+            f'''  <section>
+    <h2>{escape(title)}</h2>
+    <div class="grid">
+{chr(10).join(date_items)}
+    </div>
+  </section>'''
+        )
+    body = "\n".join(sections)
 else:
     body = '  <div class="empty">Noch keine gespeicherten Bewegungsbilder vorhanden.</div>'
 
@@ -62,6 +92,12 @@ html = f"""<!doctype html>
       margin: 0;
       font-size: 1.15rem;
       font-weight: 650;
+    }}
+    h2 {{
+      margin: 22px 0 10px;
+      font-size: 0.95rem;
+      font-weight: 650;
+      color: #e5e7eb;
     }}
     .count {{
       color: #9ca3af;
@@ -105,7 +141,7 @@ html = f"""<!doctype html>
   </style>
 </head>
 <body>
-  <header><h1>Reolink Bewegungsbilder</h1><div class="count">{len(files)} Bilder</div></header>
+  <header><h1>Reolink Bewegungsbilder</h1><div class="count">{len(files)} Bilder, max. {max_files} / 14 Tage</div></header>
 {body}
 </body>
 </html>
