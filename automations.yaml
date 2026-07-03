@@ -4,6 +4,11 @@
   mode: single
   trigger:
     - platform: state
+      entity_id: binary_sensor.driveway_motion
+      from: "off"
+      to: "on"
+      id: motion
+    - platform: state
       entity_id: binary_sensor.driveway_person
       from: "off"
       to: "on"
@@ -21,8 +26,10 @@
       entity_id: switch.driveway_privacy_mode
       state: "off"
   variables:
-    event_label: "{{ 'Person' if trigger.id == 'person' else 'Fahrzeug' }}"
-    snapshot_file: "driveway_{{ trigger.id }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
+    event_type: "{{ trigger.id | default('manual') }}"
+    event_label: >
+      {{ {'motion': 'Bewegung', 'person': 'Person', 'vehicle': 'Fahrzeug', 'manual': 'Manuell'}[event_type] }}
+    snapshot_file: "driveway_{{ event_type }}_{{ now().strftime('%Y%m%d_%H%M%S') }}.jpg"
     snapshot_path: "/config/www/snapshots/{{ snapshot_file }}"
     snapshot_url: "/local/snapshots/{{ snapshot_file }}"
   action:
@@ -42,3 +49,13 @@
           image: "{{ snapshot_url }}"
           url: "/camera-feeds/snapshots"
           clickAction: "/camera-feeds/snapshots"
+
+- id: reolink_video_gallery_refresh
+  alias: Reolink Video-Galerie aktualisieren
+  description: Aktualisiert regelmaessig die Galerie fuer Reolink-Videos vom Synology-Share.
+  mode: single
+  trigger:
+    - platform: time_pattern
+      minutes: "/5"
+  action:
+    - service: shell_command.generate_reolink_video_gallery

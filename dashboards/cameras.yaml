@@ -94,3 +94,13 @@ views:
         title: Reolink Bewegungsbilder
         url: /local/snapshots/index.html
         aspect_ratio: 100%
+
+  - title: Videos
+    path: videos
+    icon: mdi:video
+    badges: []
+    cards:
+      - type: iframe
+        title: Reolink Videos
+        url: /local/reolink-video-gallery/index.html
+        aspect_ratio: 100%
