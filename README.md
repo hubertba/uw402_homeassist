@@ -102,7 +102,7 @@ lovelace:
 `dashboards/cameras.yaml` enthaelt die Kamera-Ansichten:
 
 - `Kameras`: DoorBird-Livefeed, DoorBird-Snapshots, Reolink-Snapshots und Driveway-Status
-- `Bewegungsbilder`: HTML-Galerie der lokal gespeicherten Reolink-Snapshots
+- `Bewegungsbilder`: HTML-Galerie der Reolink-JPGs vom Synology-Share
 - `Videos`: HTML-Galerie der Reolink-Videos vom Synology-Share
 
 `dashboards/internet.yaml` zeigt den aktuellen Internet-Durchsatz:
@@ -139,15 +139,16 @@ Die Automation laeuft nur, wenn:
 - `sensor.driveway_battery` groesser als 20 Prozent ist
 - `switch.driveway_privacy_mode` aus ist
 
-Nach dem Snapshot wird `shell_command.generate_snapshot_gallery` ausgefuehrt.
-Das Script `shell_commands/generate_snapshot_gallery.sh` erzeugt:
+Das Script `shell_commands/generate_snapshot_gallery.sh` liest JPGs aus dem
+gemounteten Reolink-Share, spiegelt sie in den Home-Assistant-sichtbaren Cache
+und erzeugt:
 
 ```text
 /config/www/snapshots/index.html
 ```
 
 Die Galerie ist im Dashboard unter `/camera-feeds/snapshots` eingebettet und
-behaelt maximal 200 Bilder bzw. Bilder der letzten 14 Tage.
+zeigt maximal 200 Bilder aus den letzten 14 Tagen.
 
 ## Reolink-Videos auf Synology
 
@@ -162,8 +163,24 @@ Der Mount ist Host-Konfiguration und wird nicht im Git-Repo verwaltet. Die
 Zugangsdaten liegen auf dem Home-Assistant-Host; echte Passwoerter werden im
 README nicht dokumentiert.
 
+Die Generator-Scripte kopieren Medien atomar in einen HA-sichtbaren Cache,
+ignorieren Dateien, die juenger als 60 Sekunden sind, und schreiben die
+HTML-Galerien nur neu, wenn sich der Inhalt geaendert hat. Dadurch werden
+halb hochgeladene FTP-Dateien und unnoetige Browser-Refreshes vermieden.
+Fotos und Videos werden nach dem Reolink-Zeitstempel im Dateinamen sortiert,
+neueste Dateien zuerst. Falls kein Zeitstempel erkennbar ist, wird die
+Datei-Aenderungszeit verwendet.
+
+Der Cache liegt unter:
+
+```text
+/config/www/reolink-cache/images
+/config/www/reolink-cache/videos
+```
+
 Das Script `shell_commands/generate_reolink_video_gallery.sh` liest den
-gemounteten Share und erzeugt:
+gemounteten Share, uebernimmt maximal 50 Videos aus den letzten 14 Tagen und
+erzeugt:
 
 ```text
 /config/www/reolink-video-gallery/index.html
@@ -179,9 +196,9 @@ Unterstuetzte Video-Endungen:
 - `.webm`
 - `.ts`
 
-Die Automation `reolink_video_gallery_refresh` aktualisiert die Videogalerie
-alle 5 Minuten. Im Kamera-Dashboard ist sie unter `/camera-feeds/videos`
-eingebettet.
+Die Automation `reolink_video_gallery_refresh` aktualisiert die Bild- und
+Videogalerie alle 2 Minuten. Im Kamera-Dashboard sind sie unter
+`/camera-feeds/snapshots` und `/camera-feeds/videos` eingebettet.
 
 ## Marstek / Venus
 

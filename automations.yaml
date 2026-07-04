@@ -56,7 +56,7 @@
   mode: single
   trigger:
     - platform: time_pattern
-      minutes: "/5"
+      minutes: "/2"
   action:
     - service: shell_command.generate_snapshot_gallery
     - service: shell_command.generate_reolink_video_gallery
