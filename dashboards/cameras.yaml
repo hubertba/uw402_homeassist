@@ -85,6 +85,15 @@ views:
           - entity: binary_sensor.driveway_motion
             name: Bewegung
 
+      - type: entities
+        title: IMAP Inbox
+        show_header_toggle: false
+        entities:
+          - entity: sensor.imap_homeassist_chilicode_com_messages
+            name: Ungelesene Mails
+          - entity: automation.imap_push_bei_driveway_erkennung
+            name: Push bei Driveway-Mail
+
   - title: Bewegungsbilder
     path: snapshots
     icon: mdi:image-multiple

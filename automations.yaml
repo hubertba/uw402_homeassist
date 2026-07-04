@@ -60,3 +60,25 @@
   action:
     - service: shell_command.generate_snapshot_gallery
     - service: shell_command.generate_reolink_video_gallery
+
+- id: imap_driveway_detection_notification
+  alias: IMAP Push bei Driveway-Erkennung
+  description: Sendet eine Push-Nachricht, wenn eine neue IMAP-Mail den Reolink-Driveway-Betreff enthaelt.
+  mode: queued
+  max: 10
+  trigger:
+    - platform: event
+      event_type: imap_content
+  condition:
+    - condition: template
+      value_template: >
+        {{ 'Detected from Driveway' in (trigger.event.data.subject | default('')) }}
+  action:
+    - service: notify.mobile_app_max16
+      data:
+        title: "Driveway erkannt"
+        message: >
+          {{ trigger.event.data.subject | default('Neue Reolink-Mail') }}
+        data:
+          url: "/camera-feeds/videos"
+          clickAction: "/camera-feeds/videos"
