@@ -102,7 +102,7 @@ views:
     cards:
       - type: iframe
         title: Reolink Bewegungsbilder
-        url: /local/snapshots/index.html?v=reolink-cache-2
+        url: /local/snapshots/index.html?v=reolink-cache-3
         aspect_ratio: 160%
 
   - title: Videos
@@ -113,5 +113,5 @@ views:
     cards:
       - type: iframe
         title: Reolink Videos
-        url: /local/reolink-video-gallery/index.html?v=reolink-cache-2
+        url: /local/reolink-video-gallery/index.html?v=reolink-cache-3
         aspect_ratio: 160%
