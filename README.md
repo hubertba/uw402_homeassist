@@ -13,10 +13,11 @@ erfolgen per SSH auf den Host-Alias `ha`.
 | `automations.yaml` | Home-Assistant-Automationen |
 | `scripts.yaml` | Home-Assistant-Scripts |
 | `scenes.yaml` | Home-Assistant-Szenen |
-| `knx.yaml` | vorbereitete KNX-Konfiguration, aktuell in `configuration.yaml` auskommentiert |
+| `knx.yaml` | aktive KNX-Konfiguration |
 | `homeassistant/` | vorbereitete Package-YAMLs fuer Marstek/Venus-Sensoren |
 | `blueprints/` | lokale Home-Assistant-Blueprints |
 | `custom_components/` | lokal verwaltete Custom Components |
+| `shell_commands/` | Generator-Scripte fuer lokale HTML-Galerien |
 | `scripts/deploy.sh` | Deployment-Script fuer Sync, Config-Check und Neustart |
 | `secrets.example.yaml` | Vorlage fuer benoetigte Secret-Keys |
 
@@ -43,6 +44,9 @@ Darauf bauen mehrere Template-Sensoren auf:
 | `sensor.ecotracker_grid_power` | Ecotracker-Verbrauch minus Fronius/PV-Leistung |
 | `sensor.hausverbrauch_aktuell` | aktueller Hausverbrauch aus PV, signed Netzleistung und Batteriefluss |
 | `sensor.pumpmeup_charging_power` | berechnete Ladeleistung aus Strom, Spannung und Phasen |
+| `sensor.internet_download_mbps` | aktueller Internet-Download aus dem UniFi/UWC-Durchsatz |
+| `sensor.internet_upload_mbps` | aktueller Internet-Upload aus dem UniFi/UWC-Durchsatz |
+| `sensor.internet_durchsatz_gesamt_mbps` | Summe aus aktuellem Download und Upload |
 
 Der Hausverbrauch wird aktuell so berechnet:
 
@@ -73,6 +77,18 @@ lovelace:
       icon: mdi:chart-areaspline
       show_in_sidebar: true
       filename: dashboards/energy-flo.yaml
+    camera-feeds:
+      mode: yaml
+      title: Kameras
+      icon: mdi:cctv
+      show_in_sidebar: true
+      filename: dashboards/cameras.yaml
+    internet-bandwidth:
+      mode: yaml
+      title: Internet
+      icon: mdi:speedometer
+      show_in_sidebar: true
+      filename: dashboards/internet.yaml
 ```
 
 `dashboards/energy.yaml` enthaelt zwei Views:
@@ -82,6 +98,90 @@ lovelace:
 
 `dashboards/energy-flo.yaml` ist aus dem vorhandenen UI-Dashboard
 `lovelace.energy_flo` aus `.storage` exportiert und als YAML umgewandelt.
+
+`dashboards/cameras.yaml` enthaelt die Kamera-Ansichten:
+
+- `Kameras`: DoorBird-Livefeed, DoorBird-Snapshots, Reolink-Snapshots und Driveway-Status
+- `Bewegungsbilder`: HTML-Galerie der lokal gespeicherten Reolink-Snapshots
+- `Videos`: HTML-Galerie der Reolink-Videos vom Synology-Share
+
+`dashboards/internet.yaml` zeigt den aktuellen Internet-Durchsatz:
+
+- Download, Upload und Gesamt-Durchsatz als Gauges
+- aktuelle Rohwerte `sensor.uwc_download_throughput` und `sensor.uwc_upload_throughput`
+- Verlauf fuer 60 Minuten, 24 Stunden und 7 Tage
+
+## Reolink / Kameras
+
+Die Reolink-Driveway-Kamera ist eine batteriebetriebene Argus PT Ultra. Direkt
+in Home Assistant liefert sie zwar Status-, AI- und Snapshot-Entitaeten, aber
+keinen stabilen Livestream wie eine PoE-/ONVIF-Kamera.
+
+Aktive Snapshot-Entitaeten:
+
+- `camera.driveway_snapshots_fluent`
+- `camera.driveway_snapshots_clear`
+
+Die Automation `reolink_driveway_motion_snapshot` reagiert auf:
+
+- `binary_sensor.driveway_motion`
+- `binary_sensor.driveway_person`
+- `binary_sensor.driveway_vehicle`
+
+Sie speichert bei Erkennung ein Bild nach:
+
+```text
+/config/www/snapshots/driveway_<typ>_YYYYMMDD_HHMMSS.jpg
+```
+
+Die Automation laeuft nur, wenn:
+
+- `sensor.driveway_battery` groesser als 20 Prozent ist
+- `switch.driveway_privacy_mode` aus ist
+
+Nach dem Snapshot wird `shell_command.generate_snapshot_gallery` ausgefuehrt.
+Das Script `shell_commands/generate_snapshot_gallery.sh` erzeugt:
+
+```text
+/config/www/snapshots/index.html
+```
+
+Die Galerie ist im Dashboard unter `/camera-feeds/snapshots` eingebettet und
+behaelt maximal 200 Bilder bzw. Bilder der letzten 14 Tage.
+
+## Reolink-Videos auf Synology
+
+Reolink speichert Videos per FTP auf die Synology. Der SMB-Share ist auf dem
+Home-Assistant-Host read-only eingebunden:
+
+```text
+//10.0.1.70/video -> /homeassistant/www/reolink-videos
+```
+
+Der Mount ist Host-Konfiguration und wird nicht im Git-Repo verwaltet. Die
+Zugangsdaten liegen auf dem Home-Assistant-Host; echte Passwoerter werden im
+README nicht dokumentiert.
+
+Das Script `shell_commands/generate_reolink_video_gallery.sh` liest den
+gemounteten Share und erzeugt:
+
+```text
+/config/www/reolink-video-gallery/index.html
+```
+
+Unterstuetzte Video-Endungen:
+
+- `.mp4`
+- `.avi`
+- `.mov`
+- `.mkv`
+- `.m4v`
+- `.webm`
+- `.ts`
+
+Die Automation `reolink_video_gallery_refresh` aktualisiert die Videogalerie
+alle 5 Minuten. Im Kamera-Dashboard ist sie unter `/camera-feeds/videos`
+eingebettet.
 
 ## Marstek / Venus
 

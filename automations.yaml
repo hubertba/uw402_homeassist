@@ -51,11 +51,12 @@
           clickAction: "/camera-feeds/snapshots"
 
 - id: reolink_video_gallery_refresh
-  alias: Reolink Video-Galerie aktualisieren
-  description: Aktualisiert regelmaessig die Galerie fuer Reolink-Videos vom Synology-Share.
+  alias: Reolink Medien-Galerien aktualisieren
+  description: Aktualisiert regelmaessig die Galerien fuer Reolink-Bilder und -Videos vom Synology-Share.
   mode: single
   trigger:
     - platform: time_pattern
       minutes: "/5"
   action:
+    - service: shell_command.generate_snapshot_gallery
     - service: shell_command.generate_reolink_video_gallery
