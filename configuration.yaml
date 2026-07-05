@@ -49,6 +49,7 @@ input_boolean:
 shell_command:
   generate_snapshot_gallery: /config/shell_commands/generate_snapshot_gallery.sh
   generate_reolink_video_gallery: /config/shell_commands/generate_reolink_video_gallery.sh
+  request_reolink_gallery_refresh: /config/shell_commands/request_reolink_gallery_refresh.sh
 knx: !include knx.yaml
 
 #homeassistant:

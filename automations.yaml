@@ -52,14 +52,13 @@
 
 - id: reolink_video_gallery_refresh
   alias: Reolink Medien-Galerien aktualisieren
-  description: Aktualisiert regelmaessig die Galerien fuer Reolink-Bilder und -Videos vom Synology-Share.
+  description: Fordert regelmaessig eine Aktualisierung der Reolink-Bilder und -Videos vom Synology-Share an.
   mode: single
   trigger:
     - platform: time_pattern
       minutes: "/2"
   action:
-    - service: shell_command.generate_snapshot_gallery
-    - service: shell_command.generate_reolink_video_gallery
+    - service: shell_command.request_reolink_gallery_refresh
 
 - id: imap_driveway_detection_notification
   alias: Driveway E-Mail-Erkennung
@@ -107,6 +106,7 @@
             - service: input_boolean.turn_on
               target:
                 entity_id: input_boolean.driveway_email_vehicle
+    - service: shell_command.request_reolink_gallery_refresh
     - service: notify.mobile_app_max16
       data:
         title: "Driveway erkannt"
