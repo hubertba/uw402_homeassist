@@ -62,23 +62,64 @@
     - service: shell_command.generate_reolink_video_gallery
 
 - id: imap_driveway_detection_notification
-  alias: IMAP Push bei Driveway-Erkennung
-  description: Sendet eine Push-Nachricht, wenn eine neue IMAP-Mail den Reolink-Driveway-Betreff enthaelt.
-  mode: queued
-  max: 10
+  alias: Driveway E-Mail-Erkennung
+  description: Setzt Driveway-Erkennungsstatus und sendet eine Push-Nachricht, wenn eine Reolink-Mail fuer Driveway eintrifft.
+  mode: restart
   trigger:
     - platform: event
       event_type: imap_content
+  variables:
+    imap_subject: >
+      {% if trigger is defined and trigger.platform == 'event' %}
+        {{ trigger.event.data.subject | default('Neue Reolink-Mail') }}
+      {% else %}
+        Neue Reolink-Mail
+      {% endif %}
+    imap_text: >
+      {% if trigger is defined and trigger.platform == 'event' %}
+        {{ trigger.event.data.text | default('') }}
+      {% else %}
+        ''
+      {% endif %}
+    imap_payload: "{{ (imap_subject ~ ' ' ~ imap_text) | lower }}"
+    email_has_person: "{{ 'person' in imap_payload or 'human' in imap_payload }}"
+    email_has_vehicle: "{{ 'vehicle' in imap_payload or 'car' in imap_payload or 'fahrzeug' in imap_payload }}"
   condition:
     - condition: template
       value_template: >
-        {{ 'Detected from Driveway' in (trigger.event.data.subject | default('')) }}
+        {{ 'Detected from Driveway' in imap_subject }}
   action:
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.driveway_email_motion
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: "{{ email_has_person }}"
+          sequence:
+            - service: input_boolean.turn_on
+              target:
+                entity_id: input_boolean.driveway_email_person
+        - conditions:
+            - condition: template
+              value_template: "{{ email_has_vehicle }}"
+          sequence:
+            - service: input_boolean.turn_on
+              target:
+                entity_id: input_boolean.driveway_email_vehicle
     - service: notify.mobile_app_max16
       data:
         title: "Driveway erkannt"
         message: >
-          {{ trigger.event.data.subject | default('Neue Reolink-Mail') }}
+          {{ imap_subject }}
         data:
           url: "/camera-feeds/videos"
           clickAction: "/camera-feeds/videos"
+    - delay:
+        minutes: 5
+    - service: input_boolean.turn_off
+      target:
+        entity_id:
+          - input_boolean.driveway_email_motion
+          - input_boolean.driveway_email_person
+          - input_boolean.driveway_email_vehicle

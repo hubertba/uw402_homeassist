@@ -74,16 +74,16 @@ views:
           - entity: light.driveway_floodlight
             name: Flutlicht
 
-      - type: history-graph
-        title: Driveway Erkennung
-        hours_to_show: 24
+      - type: entities
+        title: Driveway E-Mail-Erkennung
+        show_header_toggle: false
         entities:
-          - entity: binary_sensor.driveway_person
-            name: Person
-          - entity: binary_sensor.driveway_vehicle
-            name: Fahrzeug
-          - entity: binary_sensor.driveway_motion
-            name: Bewegung
+          - entity: input_boolean.driveway_email_motion
+            name: Bewegung per E-Mail
+          - entity: input_boolean.driveway_email_person
+            name: Person per E-Mail
+          - entity: input_boolean.driveway_email_vehicle
+            name: Fahrzeug per E-Mail
 
       - type: entities
         title: IMAP Inbox
